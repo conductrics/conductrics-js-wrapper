@@ -1,0 +1,47 @@
+<html>
+<head>
+	<title>Example 1</title>
+
+	<script src="../lib/conductrics-js-wrapper-min.js"></script>
+
+	<script type="text/javascript">
+		var session = '123';
+		var agent = 'agent-1'
+		var api = new ConductricsJS(
+			'owner_sxvgyHUlj',
+			'api-nQyALpnyPsZHQrVbvtOhZpYz'
+			//, { server: 'http://test.conductrics.com:81' }
+		);
+
+		function getDecision() {
+			var options = {
+				session: document.getElementById('session').value,
+				point: 'point-1',
+				choices: {'decision-1':['experience-a','experience-b']}
+			}
+			// make call to conductrics
+			api.decision(agent, options, logResponse);
+		}
+		function sendReward() {
+			var session = document.getElementById('session').value;
+			// make call to conductrics
+			api.goal(agent, {session:session, goal:'registration'}, logResponse);
+		}
+
+		function logResponse(o) {
+			console.log(o)
+			document.getElementById('responses').value += JSON.stringify(o) + '\n';
+		}
+	</script>
+
+</head>
+<body>
+	<input id="session" type="text" value="1" size="5"/>
+	<!-- Button to send reward to Conductrics -->
+	<button type="button" onclick="getDecision()">Get Decision</button>
+	<button type="button" onclick="sendReward()">Send Reward</button>
+
+	<p>
+	<textarea id='responses' cols='80' rows='10'></textarea>
+</body>
+</html>
