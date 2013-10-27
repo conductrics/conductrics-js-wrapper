@@ -5,8 +5,9 @@
 	<script src="../lib/conductrics-js-wrapper-min.js"></script>
 
 	<script type="text/javascript">
-		var session = '123';
-		var agent = 'agent-1'
+		var session = '123'; // in practice, read from a cookie or session/visitor id
+		var agent = 'agent-1';
+
 		var api = new ConductricsJS(
 			'owner_sxvgyHUlj',
 			'api-nQyALpnyPsZHQrVbvtOhZpYz'
@@ -29,7 +30,7 @@
 		}
 
 		function logResponse(o) {
-			console.log(o)
+			if (console) { console.log(o); }
 			document.getElementById('responses').value += JSON.stringify(o) + '\n';
 		}
 	</script>

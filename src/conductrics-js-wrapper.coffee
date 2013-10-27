@@ -1,5 +1,4 @@
 # Conductrics wrapper
-
 class window.ConductricsJS
 	constructor: (@owner, @apikey, @options = {}) ->
 		@options.server ?= 'http://api.conductrics.com'
@@ -9,7 +8,7 @@ class window.ConductricsJS
 	decision: (agent, options = {}, callback = null) =>
 		endpoint = [agent, 'decisions']
 		fallback = null
-		if options.choices?
+		if options.choices? # if provided, serialize decision/choice codes and determine fallback
 			for key,val of options.choices when val?.join?
 				endpoint.push "#{key}:#{val.join ','}" # when done and joined, something like: "/decisions/size:small,big/color:red,blue,green"
 				fallback ?= {}; fallback[key] = code:val[0] unless fallback[key]
@@ -21,7 +20,7 @@ class window.ConductricsJS
 
 	goal: (agent, options, callback) =>
 		endpoint = [agent, 'goal']
-		if options.goal?
+		if options.goal? # if provided, add goal code to the url
 			endpoint.push options.goal
 			delete options.goal
 		@send endpoint, options, callback
