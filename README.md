@@ -31,7 +31,7 @@ You may provide an optional third argument to the constuctor, which is an option
 
 + `timeout` - timeout for all requests (decision, goal, etc) - the default is 5000 (five seconds)
 + `session` - a session identifier to pass to Conductrics. If null or not provided, this wrapper will receive a session identifier from the server the first time decision() is called, which will be kept as a cookie for you by default.
-+ `cookies` - an object which may contain:
++ `cookies` - an object which may contain any of the following to control how session are tracked between page views using cookies (or you can set `cookies` to `null` to disable the cookie tracking altogether):
   - `ttl` - the length of time that the cookie should be persisted for - default is 30 days. Use a ttl of 0 to specify that the cookie should persist only until the user closes their browser.
   - `domain` - can be used to specify a domain such as `.example.com` (note leading dot)
   - `path` - by default, `/` is used which is usually appropriate.
@@ -51,7 +51,7 @@ A few more advanced options:
 
 You may provide an optional second argument to the `decision` method, which is an options object that can contain:
 
-+ `session` - a session ID to use to identify the visitor. If null or not provided, the server will create a session id, which this wrapper will retain as a session cookie.
++ `session` - a session ID to use to identify the visitor. If null or not provided, the server will create a session id, which this wrapper will retain as a session cookie by default (see `cookies` option for the constructor). Cookies are not set if you provide a `session` explicitly here.
 + `point` - a point code, if you want to use the Conductrics "point" concept for decision attribution.
 + `choices` - an anonymous object that contains the options that Conductrics should select from. Each key is a decision to be made (typically one except in multivariate cases), and the value of each key should be an array of at least two choice codes.
   - For a simple decision, use something like `{version: ['a','b']}` - the selection from Conductrics will be something like `{version: {code:'b'}}`
