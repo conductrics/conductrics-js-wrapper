@@ -1,7 +1,7 @@
 # Conductrics wrapper
 class window.ConductricsJS
 	constructor: (@owner, @apikey, @opts = {}) ->
-		@opts.server ?= 'http://api.conductrics.com'
+		@opts.server ?= '//api.conductrics.com'
 		@opts.timeout ?= 5000
 		@opts.cookies ?= {ttl:(60*60*24*30), path:'/'}
 		@opts.scodestore ?= CookieLite # pluggable - expected to be a getter/setter function that implements fn('key') for reads and fn('key', val) for writes

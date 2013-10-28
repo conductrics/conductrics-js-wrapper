@@ -43,7 +43,7 @@ You may provide an optional third argument to the constuctor, which is an option
 
 A few more advanced options:
 
-+ `server` - provide if you have been assigned a 'private' Conductrics server - the default is `http://api.condutrics.com`
++ `server` - provide if you have been assigned a 'private' Conductrics server - the default is `//api.condutrics.com` (we recommend starting with `//`, which will cause http:// or https:// to be used dynamically at runtime)
 + `transport` - pluggable transport, see source for details. If you provide your own transport, you could re-compile the JavaScript without micro-ajax for a smaller file size.
 + `scodestore` - pluggable session code store, see source for details. If you provide your own store, you could re-compile the JavaScript without cookie-lite for a smaller file size.
 
