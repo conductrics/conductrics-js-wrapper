@@ -44,8 +44,8 @@ You may provide an optional third argument to the constuctor, which is an option
 A few more advanced options:
 
 + `server` - provide if you have been assigned a 'private' Conductrics server - the default is `http://api.condutrics.com`
-+ 'transport' - pluggable transport, see source for details. If you provide your own transport, you could re-compile the JavaScript without micro-ajax for a smaller file size.
-+ 'scodestore' - pluggable session code store, see source for details. If you provide your own store, you could re-compile the JavaScript without micro-ajax for a smaller file size.
++ `transport` - pluggable transport, see source for details. If you provide your own transport, you could re-compile the JavaScript without micro-ajax for a smaller file size.
++ `scodestore` - pluggable session code store, see source for details. If you provide your own store, you could re-compile the JavaScript without cookie-lite for a smaller file size.
 
 ### Notes and options for the decision() method
 
@@ -68,5 +68,7 @@ You may provide an optional second argument to the `goal` method, which is an op
 + `session` - a session ID to use to identify the visitor (see notes above).
 + `reward` - an optional numeric value for the goal that was just achieved. If not provided, the server will use the agent's default (typically `1` unless otherwise specified).
 + `goal` - a goal code to identify which of your business goals has just been achieved. If not provided, the server will use the default goal code for the agent (typically `goal-1` unless otherwise specified).
+
+Acknowledgements: Includes adapted versions of https://github.com/litejs/browser-cookie-lite and https://code.google.com/p/microajax/
 
 License: MIT
