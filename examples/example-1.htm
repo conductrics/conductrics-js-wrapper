@@ -5,28 +5,21 @@
 	<script src="../lib/conductrics-js-wrapper-min.js"></script>
 
 	<script type="text/javascript">
-		var session = '123'; // in practice, read from a cookie or session/visitor id
-		var agent = 'agent-1';
-
 		var api = new ConductricsJS(
 			'owner_sxvgyHUlj',
 			'api-nQyALpnyPsZHQrVbvtOhZpYz'
-			//, { server: 'http://test.conductrics.com:81' }
+			//, { server: 'http://test.conductrics.com:81', session:'123' }
 		);
 
 		function getDecision() {
 			var options = {
-				session: document.getElementById('session').value,
 				point: 'point-1',
 				choices: {'decision-1':['experience-a','experience-b']}
 			}
-			// make call to conductrics
-			api.decision(agent, options, logResponse);
+			api.decision('agent-1', options, logResponse);
 		}
 		function sendReward() {
-			var session = document.getElementById('session').value;
-			// make call to conductrics
-			api.goal(agent, {session:session, goal:'registration'}, logResponse);
+			api.goal('agent-1', {goal:'registration'}, logResponse);
 		}
 
 		function logResponse(o) {
@@ -37,7 +30,6 @@
 
 </head>
 <body>
-	<input id="session" type="text" value="1" size="5"/>
 	<!-- Button to send reward to Conductrics -->
 	<button type="button" onclick="getDecision()">Get Decision</button>
 	<button type="button" onclick="sendReward()">Send Reward</button>

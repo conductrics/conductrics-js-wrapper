@@ -27,20 +27,31 @@ Here's the basics. There's a more complete working example in the /examples fold
 
 ### Options for the Constructor
 
-You may provide an optional third argument to the constuctor, which is an options object that can contain:
+You may provide an optional third argument to the constuctor, which is an options object that may contain:
 
 + `timeout` - timeout for all requests (decision, goal, etc) - the default is 5000 (five seconds)
-+ `server` - default is **http://api.condutrics.com** - provide if you have been assigned a 'private' Conductrics server
++ `session` - a session identifier to pass to Conductrics. If null or not provided, this wrapper will receive a session identifier from the server the first time decision() is called, which will be kept as a cookie for you by default.
++ `cookies` - an object which may contain:
+  - `ttl` - the length of time that the cookie should be persisted for - default is 30 days. Use a ttl of 0 to specify that the cookie should persist only until the user closes their browser.
+  - `domain` - can be used to specify a domain such as `.example.com` (note leading dot)
+  - `path` - by default, `/` is used which is usually appropriate.
+  - `secure` - set to true to indicate that the cookie should be shared amongst secure (SSL) pages only
 
 ```javascript
   var api = new ConductricsAPI('my-conductrics-owner-code', 'my-api-key', {timeout:1500});
 ```
 
+A few more advanced options:
+
++ `server` - provide if you have been assigned a 'private' Conductrics server - the default is `http://api.condutrics.com`
++ 'transport' - pluggable transport, see source for details. If you provide your own transport, you could re-compile the JavaScript without micro-ajax for a smaller file size.
++ 'scodestore' - pluggable session code store, see source for details. If you provide your own store, you could re-compile the JavaScript without micro-ajax for a smaller file size.
+
 ### Notes and options for the decision() method
 
 You may provide an optional second argument to the `decision` method, which is an options object that can contain:
 
-+ `session` - a session ID to use to identify the visitor. In practice this is required at this time.
++ `session` - a session ID to use to identify the visitor. If null or not provided, the server will create a session id, which this wrapper will retain as a session cookie.
 + `point` - a point code, if you want to use the Conductrics "point" concept for decision attribution.
 + `choices` - an anonymous object that contains the options that Conductrics should select from. Each key is a decision to be made (typically one except in multivariate cases), and the value of each key should be an array of at least two choice codes.
   - For a simple decision, use something like `{version: ['a','b']}` - the selection from Conductrics will be something like `{version: {code:'b'}}`
@@ -54,7 +65,7 @@ Note that all of the "codes" such as `point` and the keys and values in the `cho
 
 You may provide an optional second argument to the `goal` method, which is an options object that can contain:
 
-+ `session` - a session ID to use to identify the visitor. In practice this is required at this time.
++ `session` - a session ID to use to identify the visitor (see notes above).
 + `reward` - an optional numeric value for the goal that was just achieved. If not provided, the server will use the agent's default (typically `1` unless otherwise specified).
 + `goal` - a goal code to identify which of your business goals has just been achieved. If not provided, the server will use the default goal code for the agent (typically `goal-1` unless otherwise specified).
 
