@@ -16,6 +16,7 @@ class window.ConductricsJS
 				url.push "#{key}:#{val.join ','}" # when done and joined, something like: "/decisions/size:small,big/color:red,blue,green"
 				fb ?= {}; fb[key] = code:val[0] unless fb[key]
 			delete opts.choices
+		fb = opts.fallback if opts.fallback? # allow explicit fallback to be provided
 		@send url, opts, (res) ->
 			return unless cb?
 			selection = res?.decisions ? fb
