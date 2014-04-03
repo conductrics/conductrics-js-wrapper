@@ -8,9 +8,8 @@ class window.ConductricsJS
 		@opts.session ?= @opts.scodestore?('mpid')
 		@opts.transport ?= MicroAjax # pluggable - expected to be a factory that implements constructor args (url, timeout, cb)
 
-	decision: (agent, opts = {}, cb = null) =>
+	decision: (agent, opts = {}, fb = null, cb = null) =>
 		url = [agent, 'decisions']
-		fb = null # fallback
 		if opts.choices? # if provided, serialize decision/choice codes and determine fallback
 			for key,val of opts.choices when val?.join?
 				url.push "#{key}:#{val.join ','}" # when done and joined, something like: "/decisions/size:small,big/color:red,blue,green"
