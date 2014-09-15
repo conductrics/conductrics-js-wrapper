@@ -1,0 +1,38 @@
+<html>
+<head>
+	<title>Example 1</title>
+
+	<script src="../lib/conductrics-js-wrapper.js"></script>
+
+	<script type="text/javascript">
+		var api = new ConductricsJS(
+			'owner_sxvgyHUlj',
+			'api-IRkGWYAFyHDXDtmyAjSRHysF',
+			{ server: 'http://test.conductrics.com:8001', session:'123', batching:'auto' }
+		);
+
+		function getDecision() {
+			api.decision('agent-1', {choices: {'decision-1':['experience-a','experience-b']}}, logResponse);
+			api.decision('agent-2', {choices: {'decision-1':['hey-a','hey-b']}}, logResponse);
+			api.decision('agent-3', {choices: {'decision-1':['experience-a','experience-b']}}, logResponse);
+		}
+		function sendReward() {
+			api.goal('agent-2', {goal:'registration'}, logResponse);
+		}
+
+		function logResponse(o) {
+			if (console) { console.log(o); }
+			document.getElementById('responses').value += JSON.stringify(o) + '\n';
+		}
+	</script>
+
+</head>
+<body>
+	<!-- Button to send reward to Conductrics -->
+	<button type="button" onclick="getDecision()">Get Decision</button>
+	<button type="button" onclick="sendReward()">Send Reward</button>
+
+	<p>
+	<textarea id='responses' cols='80' rows='10'></textarea>
+</body>
+</html>

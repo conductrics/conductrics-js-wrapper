@@ -1,6 +1,6 @@
 # conductrics-js-wrapper
 
-**Experimental** lightweight wrapper for the key parts of the Conductrics API for bandit-style optimization, dynamic targeting, and A/B testing, with no dependencies on other libraries. We'll assume here that you are familiar with the basic idea of the service. If not, please see http://www.conductrics.com for information about the service itself.
+Lightweight wrapper for the key parts of the Conductrics API for bandit-style optimization, dynamic targeting, and A/B testing, with no dependencies on other libraries. We'll assume here that you are familiar with the basic idea of the service. If not, please see http://www.conductrics.com for information about the service itself.
 
 Please see https://github.com/conductrics/conductrics-jquery for a more fully-featured and field-tested wrapper.
 
@@ -68,6 +68,17 @@ You may provide an optional second argument to the `goal` method, which is an op
 + `session` - a session ID to use to identify the visitor (see notes above).
 + `reward` - an optional numeric value for the goal that was just achieved. If not provided, the server will use the agent's default (typically `1` unless otherwise specified).
 + `goal` - a goal code to identify which of your business goals has just been achieved. If not provided, the server will use the default goal code for the agent (typically `goal-1` unless otherwise specified).
+
+### Request Batching (BETA) ###
+
+Normally, each decision or reward call results in an HTTP request to Conductrics. If lots of decisions (or rewards) for different agents may be made on a web page, it is possible that this could result in a bunch of HTTP requests, which could have a negative impact on performance (depending on when your code makes the calls).
+
+There are two batching options:
+
+- **Automatic batching**. Just add `batching:'auto'` in the options object for the constructor.
+- **Manual batching**. Add `batching:'manual'` for the options object for the constructor. Now call `batchStart()` before the decision() and goal() calls you would like batched, and then `batchSend()` to send them to Conductrics.
+
+With either the automatic or manual mode, the callbacks for each of your decision/reward calls will be executed normally when the batched response is received from Conductrics. In other words, you shouldn't have to change the decision() and reward() calls themselves, or their callback handlers.
 
 Acknowledgements: Includes adapted versions of https://github.com/litejs/browser-cookie-lite and https://code.google.com/p/microajax/
 

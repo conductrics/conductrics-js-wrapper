@@ -7,6 +7,8 @@ class window.ConductricsJS
 		@opts.scodestore ?= CookieLite # pluggable - expected to be a getter/setter function that implements fn('key') for reads and fn('key', val) for writes
 		@opts.session ?= @opts.scodestore?('mpid')
 		@opts.transport ?= MicroAjax # pluggable - expected to be a factory that implements constructor args (url, timeout, cb)
+		@opts.batching ?= 'off'
+		@batchStart() if @opts.batching in ['auto','manual']
 
 	decision: (agent, opts = {}, cb = null) =>
 		url = [agent, 'decisions']
@@ -16,8 +18,10 @@ class window.ConductricsJS
 				url.push "#{key}:#{val.join ','}" # when done and joined, something like: "/decisions/size:small,big/color:red,blue,green"
 				fb ?= {}; fb[key] = code:val[0] unless fb[key]
 			delete opts.choices
-		fb = opts.fallback if opts.fallback? # allow explicit fallback to be provided
-		@send url, opts, (res) ->
+		if opts.fallback? # allow explicit fallback to be provided
+			fb = opts.fallback
+			delete opts.fallback
+		@send url, opts, null, true, (res) ->
 			return unless cb?
 			selection = res?.decisions ? fb
 			cb selection, res?.session
@@ -27,17 +31,33 @@ class window.ConductricsJS
 		if opts.goal? # if provided, add goal code to the url
 			url.push opts.goal
 			delete opts.goal
-		@send url, opts, (res) ->
+		@send url, opts, null, true, (res) ->
 			return unless cb?
 			success = res?.session?
 			cb success, res?.session
 
-	send: (url, data = {}, cb) =>
+	send: (url, data, body, batchable, cb) =>
 		data.apikey = @apikey
 		data.session = @opts.session if @opts.session?
 		data._t = new Date().getTime()
+		# if batching
+		if batchable and @opts.batching in ['auto','manual']
+			batchItem =
+				agent: url[0]
+				type: url[1]
+				query: data
+				cb: cb
+			switch batchItem.type
+				when 'decisions'
+					batchItem.choices = url[2..].join('/') if url.length > 2
+				when 'goal'
+					batchItem.goal = url[2] if url.length > 2
+			@batch.push batchItem # the callback will be called later, after we send the batch
+			_batchSend(@) if @opts.batching is 'auto' # if it's manual, the user is supposed to call batchSend() themselves
+			return
+		# not batching
 		url = "#{@opts.server}/#{@owner}/#{url.join '/'}?#{qsformat data}"
-		new @opts.transport url, @opts.timeout, (text) =>
+		new @opts.transport url, body, @opts.timeout, (text) =>
 			try
 				res = JSON.parse text
 				cb res
@@ -49,3 +69,23 @@ class window.ConductricsJS
 
 	# helpers
 	qsformat = (data) -> qs = ''; qs += "&#{k}=#{escape v}" for k,v of data; return qs
+	debounce = (ms, f) ->
+		timeout = null
+		(a...) ->
+			clearTimeout timeout
+			setTimeout (=>
+				f.apply @, a
+			), ms
+
+	# batch management
+	_batchSend = debounce 20, (self) -> self.batchSend()
+	batchStart: -> @batch = []
+	batchSend: ->
+		url = ['-','batch']
+		batchData = @batch.concat()
+		return unless batchData.length > 0
+		@batchStart()
+		@send url, {}, batchData, false, (results) ->
+			return unless results?.length > 0
+			for i of batchData when results[i]? and batchData[i]?
+				batchData[i].cb results[i].data # call each deferred callback with the corresponding data
