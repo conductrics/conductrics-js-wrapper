@@ -86,7 +86,7 @@ There are two batching options:
 	api.decision('my-agent-3', {...}, function(selection) { ... my callback logic here ... });
 
 	// Manual batching
-	var api = new ConductricsAPI('my-conductrics-owner-code', 'my-api-key', {batching:'auto'});
+	var api = new ConductricsAPI('my-conductrics-owner-code', 'my-api-key', {batching:'manual'});
 	api.batchStart()
 	api.decision('my-agent-1', {...}, function(selection) { ... my callback logic here ... });
 	api.decision('my-agent-2', {...}, function(selection) { ... my callback logic here ... });
