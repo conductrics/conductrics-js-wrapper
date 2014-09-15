@@ -71,12 +71,28 @@ You may provide an optional second argument to the `goal` method, which is an op
 
 ### Request Batching (BETA) ###
 
-Normally, each decision or reward call results in an HTTP request to Conductrics. If lots of decisions (or rewards) for different agents may be made on a web page, it is possible that this could result in a bunch of HTTP requests, which could have a negative impact on performance (depending on when your code makes the calls).
+Normally, each decision or reward call results in an HTTP request to Conductrics. If lots of decisions (or rewards) for different agents may be made on a web page, it is possible that this could result in a bunch of HTTP requests, which could have a negative impact on performance (depending on when your code makes the calls). For such cases, the wrapper provides support for simple request batching, which uses our Batch API behind the scenes.
 
 There are two batching options:
 
 - **Automatic batching**. Just add `batching:'auto'` in the options object for the constructor.
 - **Manual batching**. Add `batching:'manual'` for the options object for the constructor. Now call `batchStart()` before the decision() and goal() calls you would like batched, and then `batchSend()` to send them to Conductrics.
+
+```javascript
+	// Automatic batching
+	var api = new ConductricsAPI('my-conductrics-owner-code', 'my-api-key', {batching:'auto'});
+	api.decision('my-agent-1', {...}, function(selection) { ... my callback logic here ... });
+	api.decision('my-agent-2', {...}, function(selection) { ... my callback logic here ... });
+	api.decision('my-agent-3', {...}, function(selection) { ... my callback logic here ... });
+
+	// Manual batching
+	var api = new ConductricsAPI('my-conductrics-owner-code', 'my-api-key', {batching:'auto'});
+	api.batchStart()
+	api.decision('my-agent-1', {...}, function(selection) { ... my callback logic here ... });
+	api.decision('my-agent-2', {...}, function(selection) { ... my callback logic here ... });
+	api.decision('my-agent-3', {...}, function(selection) { ... my callback logic here ... });
+	api.batchSend();
+```
 
 With either the automatic or manual mode, the callbacks for each of your decision/reward calls will be executed normally when the batched response is received from Conductrics. In other words, you shouldn't have to change the decision() and reward() calls themselves, or their callback handlers.
 
