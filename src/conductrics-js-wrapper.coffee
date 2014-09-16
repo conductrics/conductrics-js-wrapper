@@ -42,17 +42,7 @@ class window.ConductricsJS
 		data._t = new Date().getTime()
 		# if batching
 		if batchable and @opts.batching in ['auto','manual']
-			batchItem =
-				agent: url[0]
-				type: url[1]
-				query: data
-				cb: cb
-			switch batchItem.type
-				when 'decisions'
-					batchItem.choices = url[2..].join('/') if url.length > 2
-				when 'goal'
-					batchItem.goal = url[2] if url.length > 2
-			@batch.push batchItem # the callback will be called later, after we send the batch
+			@batch.push _batchItem(url, data, cb) # the callback will be called later, after we send the batch
 			_batchSend(@) if @opts.batching is 'auto' # if it's manual, the user is supposed to call batchSend() themselves
 			return
 		# not batching
@@ -78,14 +68,25 @@ class window.ConductricsJS
 			), ms
 
 	# batch management
-	_batchSend = debounce 20, (self) -> self.batchSend()
 	batchStart: -> @batch = []
 	batchSend: ->
 		url = ['-','batch']
-		batchData = @batch.concat()
-		return unless batchData.length > 0
-		@batchStart()
-		@send url, {}, batchData, false, (results) ->
-			return unless results?.length > 0
-			for i of batchData when results[i]? and batchData[i]?
-				batchData[i].cb results[i].data # call each deferred callback with the corresponding data
+		batched = @batch.concat() # make a copy so we can reset the @batch array
+		@batchStart() # reset the @batch array
+		return unless batched.length > 0 # nothing to do
+		@send url, {}, batched, false, (results) ->
+			batched[i].cb(results?[i]?.data) for i of batched # call each deferred callback with the corresponding data - if no data for the callback, call it anyway with 'undefined'
+	_batchSend = debounce 20, (self) -> self.batchSend()
+	_batchItem = (url, data, cb) ->
+		item =
+			agent: url[0]
+			type: url[1]
+			query: data
+			cb: cb
+		switch item.type
+			when 'decisions'
+				item.choices = url[2..].join('/') if url.length > 2
+			when 'goal'
+				item.goal = url[2] if url.length > 2
+		return item
+

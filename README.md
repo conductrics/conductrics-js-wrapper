@@ -75,8 +75,7 @@ Normally, each decision or reward call results in an HTTP request to Conductrics
 
 There are two batching options:
 
-- **Automatic batching**. Just add `batching:'auto'` in the options object for the constructor.
-- **Manual batching**. Add `batching:'manual'` for the options object for the constructor. Now call `batchStart()` before the decision() and goal() calls you would like batched, and then `batchSend()` to send them to Conductrics.
+**Automatic batching**. Just add `batching:'auto'` in the options object for the constructor. Calls to decision() and reward() made closely together in time (such as during a typical web page load) will be automatically "batched" into one HTTP request to Conductrics.
 
 ```javascript
 	// Automatic batching
@@ -84,7 +83,11 @@ There are two batching options:
 	api.decision('my-agent-1', {...}, function(selection) { ... my callback logic here ... });
 	api.decision('my-agent-2', {...}, function(selection) { ... my callback logic here ... });
 	api.decision('my-agent-3', {...}, function(selection) { ... my callback logic here ... });
+```
 
+**Manual batching**. Add `batching:'manual'` for the options object for the constructor. Now call `batchStart()` before the decision() and goal() calls you would like batched, and then `batchSend()` to send them to Conductrics.
+
+```javascript
 	// Manual batching
 	var api = new ConductricsAPI('my-conductrics-owner-code', 'my-api-key', {batching:'manual'});
 	api.batchStart()
