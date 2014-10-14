@@ -8,7 +8,11 @@
 		var api = new ConductricsJS(
 			'owner_sxvgyHUlj',
 			'api-IRkGWYAFyHDXDtmyAjSRHysF',
-			{ server: 'http://test.conductrics.com:8001', session:'123', batching:'auto' }
+			{
+				server: 'http://test.conductrics.com:8002',
+				// session:'123',
+				batching:'auto'
+			}
 		);
 
 		function getDecision() {
@@ -17,7 +21,9 @@
 			api.decision('agent-3', {choices: {'decision-1':['experience-a','experience-b']}}, logResponse);
 		}
 		function sendReward() {
+			api.goal('agent-1', {goal:'registration'}, logResponse);
 			api.goal('agent-2', {goal:'registration'}, logResponse);
+			api.goal('agent-3', {goal:'registration'}, logResponse);
 		}
 
 		function logResponse(o) {

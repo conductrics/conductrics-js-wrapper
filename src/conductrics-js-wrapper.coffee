@@ -21,7 +21,8 @@ class window.ConductricsJS
 		if opts.fallback? # allow explicit fallback to be provided
 			fb = opts.fallback
 			delete opts.fallback
-		@send url, opts, null, true, (res) ->
+		@send url, opts, null, true, (res) =>
+			keepId @opts, res?.session
 			return unless cb?
 			selection = res?.decisions ? fb
 			cb selection, res?.session
@@ -31,7 +32,8 @@ class window.ConductricsJS
 		if opts.goal? # if provided, add goal code to the url
 			url.push opts.goal
 			delete opts.goal
-		@send url, opts, null, true, (res) ->
+		@send url, opts, null, true, (res) =>
+			keepId @opts, res?.session
 			return unless cb?
 			success = res?.session?
 			cb success, res?.session
@@ -53,12 +55,13 @@ class window.ConductricsJS
 				cb res
 			catch e
 				cb null
-			if res?.session? and @opts.cookies?
-				@opts.session = res.session
-				@opts.scodestore?('mpid', res.session, @opts.cookies)
 
 	# helpers
 	qsformat = (data) -> qs = ''; qs += "&#{k}=#{escape v}" for k,v of data; return qs
+	keepId = (opts, session) ->
+		if session? and opts.cookies?
+			opts.session = session
+			opts.scodestore?('mpid', session, opts.cookies)
 	debounce = (ms, f) ->
 		timeout = null
 		(a...) ->
@@ -75,7 +78,9 @@ class window.ConductricsJS
 		@batchStart() # reset the @batch array
 		return unless batched.length > 0 # nothing to do
 		@send url, {}, batched, false, (results) ->
-			batched[i].cb(results?[i]?.data) for i of batched # call each deferred callback with the corresponding data - if no data for the callback, call it anyway with 'undefined'
+			for i of batched
+				item = results?[i]
+				batched[i].cb(item?.data) # call each deferred callback with the corresponding data - if no data for the callback, call it anyway with 'undefined'
 	_batchSend = debounce 20, (self) -> self.batchSend()
 	_batchItem = (url, data, cb) ->
 		item =
