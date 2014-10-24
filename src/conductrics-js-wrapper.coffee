@@ -35,9 +35,9 @@ class window.ConductricsJS
 		@send url, opts, null, true, (res) =>
 			keepId @opts, res?.session
 			return unless cb?
-			success = res?.reward > 0 # if Conductrics returns 0 for the reward, it didn't accept the goal (probably the session expired, or no prior decision was made, or the reward was rejected because it was too big or was already received)
-			retryable = res?.agent? # if the Conductrics response contains the agent, we did get an answer back from Conductrics (not a network error) so there's no point in retrying
-			cb success, res?.session, retryable
+			accepted = res?.reward > 0 # if Conductrics returns 0 for the reward, it didn't accept the goal (probably the session expired, or no prior decision was made, or the reward was rejected because it was too big or was already received)
+			retryable = not res?.agent? # if the Conductrics response contains the agent, we did get an answer back from Conductrics (not a network error) so there's no point in retrying
+			cb accepted, res?.session, retryable
 
 	send: (url, data, body, batchable, cb) =>
 		data.apikey = @apikey
