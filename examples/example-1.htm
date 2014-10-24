@@ -19,7 +19,9 @@
 			api.decision('agent-1', options, logResponse);
 		}
 		function sendReward() {
-			api.goal('agent-1', {goal:'registration'}, logResponse);
+			api.goal('agent-1', {goal:'registration'}, function(accepted, session, retryable) {
+				logResponse([accepted, session, retryable]);
+			});
 		}
 
 		function logResponse(o) {

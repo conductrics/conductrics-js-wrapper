@@ -20,7 +20,7 @@ Here's the basics. There's a more complete working example in the /examples fold
 	});
 
 	// Later, send a reward to the agent
-	api.goal 'my-agent', {session:session}, function(response) {
+	api.goal 'my-agent', {session:session}, function(accepted) {
 		// generally nothing to actually do afterward
 	}
 ```
@@ -68,6 +68,12 @@ You may provide an optional second argument to the `goal` method, which is an op
 + `session` - a session ID to use to identify the visitor (see notes above).
 + `reward` - an optional numeric value for the goal that was just achieved. If not provided, the server will use the agent's default (typically `1` unless otherwise specified).
 + `goal` - a goal code to identify which of your business goals has just been achieved. If not provided, the server will use the default goal code for the agent (typically `goal-1` unless otherwise specified).
+
+Generally, goal() can be called in a "fire and forget" manner, but for cases where you would like more feedback, your callback function will be passed three arguments:
+
++ `accepted` - a boolean that indicates whether the goal was received and accepted by Conductrics. If false, that means that either there was a network failure, or the goal wasn't accepted by Conductrics (reasons for this include sending a goal value that is too high, sending the same goal too many times, trying to send a goal for which there was no preceding decision to credit for the goal, or trying to send a goal after the session times out).
++ `session` - the session identifier, as a string. May be `null` if there was no prior decision for the agent in question.
++ `retryable` - a boolean that indicates whether there is any sense in retrying the goal() call later. Will be true if `accepted` was false because of a network error or rate-limiting issue. Will be false if the goal was simply not accepted by Conductrics.
 
 ### Request Batching (BETA) ###
 
