@@ -9,7 +9,8 @@ class MicroAjax
 		req.onload = -> callback req.responseText
 		req.onerror = req.ontimeout = -> callback null
 		if body?
-			req.setRequestHeader 'Content-Type', 'application/json'
+			unless url.indexOf('_type=json') > 0 # don't add header if overriding via query param (workaround for CORS preflight requirement)
+				req.setRequestHeader 'Content-Type', 'application/json'
 			req.send JSON.stringify body
 		else
 			req.send()

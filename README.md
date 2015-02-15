@@ -75,7 +75,7 @@ Generally, goal() can be called in a "fire and forget" manner, but for cases whe
 + `session` - the session identifier, as a string. May be `null` if there was no prior decision for the agent in question.
 + `retryable` - a boolean that indicates whether there is any sense in retrying the goal() call later. Will be true if `accepted` was false because of a network error or rate-limiting issue. Will be false if the goal was simply not accepted by Conductrics.
 
-### Request Batching (BETA) ###
+### Request Batching ###
 
 Normally, each decision or reward call results in an HTTP request to Conductrics. If lots of decisions (or rewards) for different agents may be made on a web page, it is possible that this could result in a bunch of HTTP requests, which could have a negative impact on performance (depending on when your code makes the calls). For such cases, the wrapper provides support for simple request batching, which uses our Batch API behind the scenes.
 
@@ -104,6 +104,9 @@ There are two batching options:
 ```
 
 With either the automatic or manual mode, the callbacks for each of your decision/reward calls will be executed normally when the batched response is received from Conductrics. In other words, you shouldn't have to change the decision() and reward() calls themselves, or their callback handlers.
+
+Behind the scenes, the wrapper will submit the request to Conductrics via a single POST per batch. Most modern browsers would normally
+want to do a ["preflight" OPTIONS request](http://www.w3.org/TR/cors/#preflight-request "preflight") to comply with the CORS spec. This wrapper attempts to skip the preflight call by using a Content-Type of text/plain rather than application/json, even though the posted data is actually JSON-encoded. If you want the preflight requests to happen normally per the standard, just set `batchingSkipsPreflight: false` in the options object for the constructor.
 
 Acknowledgements: Includes adapted versions of https://github.com/litejs/browser-cookie-lite and https://code.google.com/p/microajax/
 

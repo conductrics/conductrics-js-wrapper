@@ -8,6 +8,7 @@ class window.ConductricsJS
 		@opts.session ?= @opts.scodestore?('mpid')
 		@opts.transport ?= MicroAjax # pluggable - expected to be a factory that implements constructor args (url, timeout, cb)
 		@opts.batching ?= 'off'
+		@opts.batchingSkipsPreflight ?= true
 		@batchStart() if @opts.batching in ['auto','manual']
 
 	decision: (agent, opts = {}, cb = null) =>
@@ -78,7 +79,8 @@ class window.ConductricsJS
 		batched = @batch.concat() # make a copy so we can reset the @batch array
 		@batchStart() # reset the @batch array
 		return unless batched.length > 0 # nothing to do
-		@send url, {}, batched, false, (results) ->
+		params = if @opts.batchingSkipsPreflight then {_type:'json'} else {} # add &_type=json to indicate content type (workaround for CORS preflight requirement)
+		@send url, params, batched, false, (results) ->
 			for i of batched
 				item = results?[i]
 				batched[i].cb(item?.data) # call each deferred callback with the corresponding data - if no data for the callback, call it anyway with 'undefined'
