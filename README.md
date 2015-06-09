@@ -2,7 +2,7 @@
 
 Lightweight wrapper for the key parts of the Conductrics API for bandit-style optimization, dynamic targeting, and A/B testing, with no dependencies on other libraries. We'll assume here that you are familiar with the basic idea of the service. If not, please see http://www.conductrics.com for information about the service itself.
 
-Please see https://github.com/conductrics/conductrics-jquery for a more fully-featured and field-tested wrapper.
+See also https://github.com/conductrics/conductrics-jquery if you're using jQuery.
 
 ## Quick Example Usage
 
